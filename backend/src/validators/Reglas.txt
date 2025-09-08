@@ -1,0 +1,16 @@
+Validaciones para archivos del Banco Santander:
+
+Validación de Estructura:
+
+Cada línea debe seguir un formato estricto de 3 campos separados por una doble tabulación: Nombre y Apellido CBU Monto.
+Si una línea no tiene esta estructura, se reporta como un error de formato.
+Validación del CBU:
+
+Formato: El CBU debe contener exactamente 22 dígitos y deben ser todos numéricos.
+Duplicados: Se verifica que no haya ningún número de CBU repetido en todo el archivo. Cada CBU debe ser único.
+Validación del Monto:
+
+Numérico: El monto debe ser un número válido. Se aceptan tanto números enteros como decimales (ej: 1500 o 1500.75). No se aceptan letras ni símbolos.
+Líneas Vacías:
+
+Las líneas en blanco se ignoran y no se procesan, para evitar errores innecesarios.
