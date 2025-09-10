@@ -1,11 +1,12 @@
 const { validateBasic } = require("./basicValidator");
 const { validateSantander } = require("./banks/santanderValidator");
+const { validateGalicia } = require("./banks/galiciaValidator");
 
 /**
  * Orquesta el proceso de validación según el plan del usuario.
  * @param {string} fileContent - El contenido del archivo.
  * @param {string} plan - 'basic' o 'premium'.
- * @param {string} [bank] - El banco para la validación premium (ej: 'santander').
+ * @param {string} [bank] - El banco para la validación premium (ej: 'santander', 'galicia').
  * @returns {object} - El resultado de la validación.
  */
 function validateFile(fileContent, plan, bank = null) {
@@ -30,12 +31,9 @@ function validateFile(fileContent, plan, bank = null) {
 		}
 		switch (bank) {
 			case "santander":
-				// Para la validación premium, se ejecuta directamente la del banco específico,
-				// ya que su estructura es rígida y las validaciones básicas no aplicarían de la misma forma.
 				return validateSantander(fileContent);
-			// Aquí se podrían añadir otros bancos
-			// case 'galicia':
-			//   return validateGalicia(fileContent);
+			case "galicia":
+				return validateGalicia(fileContent);
 			default:
 				return {
 					bank: "Error",

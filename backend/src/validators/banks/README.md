@@ -41,4 +41,35 @@ Las validaciones para Santander se basan en el formato de archivo de **longitud 
     - Debe ser un valor numérico que coincida con la cantidad total de registros de detalle (`D`) presentes en el archivo.
 
 ---
+
+## Banco Galicia
+
+Las validaciones para Galicia se basan en el formato de archivo de **longitud fija "Diseño TXT 3"** (477 caracteres).
+
+### Validación de Estructura General
+
+- **Longitud de Línea**: Cada línea debe tener una longitud fija y exacta de **477 caracteres**.
+- **Estructura de Registros**:
+    - El archivo debe comenzar con un registro de **Cabecera** (línea que empieza con `*H3`).
+    - El archivo debe finalizar con un registro de **Pie** (línea que empieza con `*F`).
+    - Las líneas intermedias se consideran registros de **Detalle**.
+
+### Validaciones por Tipo de Registro y Cruzadas
+
+#### 1. Registro de Cabecera (`*H3`)
+- **Importe Total (Pos. 61-74)**: Se extrae el importe total del lote, que debe ser un número de 14 dígitos.
+
+#### 2. Registros de Detalle
+- **CUIT/CUIL (Pos. 17-27)**: Debe ser un campo numérico de **11 dígitos**.
+- **CBU (Pos. 50-71)**: Si se informa, debe ser un campo numérico de **22 dígitos**.
+- **Importe (Pos. 79-92)**: Debe ser un campo numérico de **14 dígitos** (12 enteros y 2 decimales).
+
+#### 3. Registro de Pie (`*F`)
+- **Cantidad de Registros (Pos. 9-15)**: Se extrae la cantidad total de registros de detalle.
+
+### Validaciones Cruzadas
+- **Suma de Importes**: La suma de todos los importes de los registros de **Detalle** debe coincidir exactamente con el **Importe Total** declarado en la **Cabecera**.
+- **Conteo de Registros**: La cantidad de registros de **Detalle** debe coincidir exactamente con la **Cantidad de Registros** declarada en el **Pie**.
+
+---
 *A medida que se agregue soporte para más bancos, su documentación aparecerá aquí.*
