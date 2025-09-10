@@ -1,27 +1,22 @@
 # Validador de Archivos de Pago
 
-Este proyecto es una aplicación web diseñada para validar archivos de texto plano (`.txt`) utilizados para la liquidación de sueldos en bancos argentinos. El objetivo es proporcionar una herramienta que centralice las validaciones de formato y contenido según las especificaciones de cada banco.
+Este proyecto es una aplicación web diseñada para validar archivos de texto plano (`.txt`) utilizados para la liquidación de sueldos y pagos. El objetivo es proporcionar una herramienta flexible que ofrezca desde validaciones genéricas hasta chequeos de formato específicos de cada banco argentino.
 
-## Características (MVP)
+## Arquitectura de Validación
 
-- **Backend robusto**: Construido con Node.js y Express, capaz de procesar archivos de texto.
-- **Validación por banco**: Lógica de negocio modular para soportar las reglas específicas de cada entidad.
-- **Reporte de errores**: La API devuelve un informe detallado en formato JSON con los errores encontrados, indicando línea, campo y descripción del problema.
-- **Soporte inicial**: La primera implementación incluye soporte para el Banco Santander.
+El validador opera bajo un sistema de dos niveles para adaptarse a distintas necesidades:
 
-## Validaciones Implementadas (Banco Santander)
+1.  **Plan Básico**: Ofrece validaciones genéricas sobre archivos de formato simple (delimitados por espacios o tabulaciones). Es ideal para chequeos rápidos sin necesidad de adherirse a un layout bancario estricto.
+2.  **Plan Premium**: Proporciona validaciones exhaustivas basadas en los formatos de archivo oficiales de cada banco. Esta opción es para usuarios que necesitan garantizar la compatibilidad total de sus archivos antes de subirlos a la plataforma del banco.
 
-Actualmente, el validador de Santander aplica las siguientes reglas:
+### Lógica de Validación
 
-1.  **Estructura de Línea**:
-    -   Verifica que cada línea contenga 3 campos separados por una doble tabulación (`		`): `Nombre Apellido`, `CBU` y `Monto`.
+- **Plan Básico (Genérico)**: Realiza chequeos de alto nivel sobre archivos de formato simple, como la correcta formación de CBU y montos, y la no existencia de duplicados.
+- **Plan Premium (Por Banco)**: Aplica las reglas específicas de cada entidad bancaria, como formatos de longitud fija, estructuras de registros (cabecera, detalle, cierre) y validación de campos posicionales.
 
-2.  **Validación de CBU**:
-    -   **Formato y Longitud**: El CBU debe contener exactamente 22 dígitos numéricos.
-    -   **Unicidad**: No se permiten CBUs duplicados en el mismo archivo.
+Para una descripción detallada de las reglas de validación de cada banco soportado en el Plan Premium, por favor consulta la documentación específica en la carpeta de validadores:
 
-3.  **Validación de Monto**:
-    -   **Formato Numérico**: El monto debe ser un número válido (entero o decimal).
+**[Ver Documentación de Validaciones por Banco](./backend/src/validators/banks/README.md)**
 
 ## Stack de Tecnología
 
@@ -53,11 +48,29 @@ Para levantar el entorno de desarrollo del backend, sigue estos pasos:
 
 ### Endpoint de Validación
 
--   `POST /api/validate/santander`
+-   `POST /api/validate`
 
-Sube un archivo de texto plano (`.txt`) a este endpoint para validarlo contra las reglas del Banco Santander.
+Este es el endpoint principal para validar archivos. La petición debe ser de tipo `multipart/form-data` y contener los siguientes campos:
 
--   **Key**: `paymentFile`
--   **Value**: (Tu archivo `.txt`)
+| Key           | Value                   | Descripción                                                                   |
+| :------------ | :---------------------- | :---------------------------------------------------------------------------- |
+| `paymentFile` | (Archivo `.txt`)        | El archivo de pagos que se desea validar.                                     |
+| `plan`        | `basic` o `premium`     | El nivel de validación a aplicar.                                             |
+| `bank`        | `santander` (u otro)    | El banco específico para la validación `premium`. No es necesario para el plan `basic`. |
 
-La respuesta será un JSON con el resultado de la validación.
+### Ejemplo de Uso
+
+#### Solicitud para Plan Básico
+- **Archivo**: Un `.txt` con líneas como `0123456789012345678901 1500.50`.
+- **Cuerpo de la petición (`form-data`):**
+  - `paymentFile`: (tu archivo `testBasic.txt`)
+  - `plan`: `basic`
+
+#### Solicitud para Plan Premium
+- **Archivo**: Un `.txt` con el formato de longitud fija de Santander.
+- **Cuerpo de la petición (`form-data`):**
+  - `paymentFile`: (tu archivo `testSantander.txt`)
+  - `plan`: `premium`
+  - `bank`: `santander`
+
+La respuesta en ambos casos será un JSON con el resultado detallado de la validación.
