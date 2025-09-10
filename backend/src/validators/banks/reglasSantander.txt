@@ -1,0 +1,28 @@
+Validaciones para archivos del Banco Santander (Formato de Longitud Fija):
+
+Validación de Estructura General:
+- El archivo debe ser de texto con codificación ASCII/Latin-1.
+- Cada línea debe tener una longitud fija de 650 caracteres.
+- El archivo debe comenzar con una línea de Cabecera (tipo 'H').
+- El archivo debe finalizar con una línea de Cierre (tipo 'T').
+- Entre la cabecera y el cierre, debe haber una o más líneas de Detalle (tipo 'D').
+
+Validaciones por Tipo de Registro:
+
+1. Registro de Cabecera (H):
+- El primer carácter debe ser 'H'.
+- Se valida el formato del "Número de Acuerdo" (posiciones 2-18).
+
+2. Registro de Detalle (D):
+- El primer carácter debe ser 'D'.
+- CBU (pos 402-427): Debe contener 22 dígitos numéricos. No debe estar duplicado en el archivo.
+- Importe (pos 444-458): Debe ser un campo numérico de 15 dígitos (13 para la parte entera y 2 para los decimales).
+- CUIL/CUIT del beneficiario (pos 224-234): Debe ser un campo numérico de 11 dígitos.
+- Código de Moneda (pos 3): Debe ser '0' (pesos) o '2' (dólares).
+
+3. Registro de Cierre (T):
+- El primer carácter debe ser 'T'.
+- Cantidad de Registros (ej. pos 12-16): Debe ser un número que coincida con la cantidad total de líneas de Detalle ('D') en el archivo.
+
+Líneas Vacías:
+- Las líneas completamente en blanco se ignoran.
